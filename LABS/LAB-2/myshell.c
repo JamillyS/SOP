@@ -1,0 +1,156 @@
+#include <stdio.h>
+#include <sys/stat.h>
+#include <unistd.h> //getcwd exige que use essa biblioteca
+#include <string.h>
+#include <limits.h> //PATH_MAX definido nessa biblioteca
+#include <dirent.h>
+#include <time.h>
+
+
+int mycwd() {
+  // char *getcwd(char buf[.size], size_t size);
+    
+    size_t size = PATH_MAX;
+    char buf[size];
+
+    if(getcwd(buf, sizeof(buf)) != NULL){
+        printf("%s\n", buf);
+    }else {
+        perror("getcwd() error\n"); return 1;
+     }
+    return 0;  
+    }
+
+//Função para criar uma pasta
+int mymkdir() {
+  // int mkdir(const char *pathname, mode_t mode);
+    
+    char pathname[PATH_MAX];
+    printf("Novo diretório: ");
+    scanf("%s", &pathname);
+
+    if(mkdir(pathname, 0700) != 0){
+       perror("mkdir() error\n"); return 1;
+    }
+
+  return 0;
+}
+
+//Função para remover pasta/arquivos
+int myrmdir() {
+  // int rmdir(const char *pathname);
+  //int size = statbuf.st_size;
+    char pathname[PATH_MAX];
+    printf("Diretório a ser removido: ");
+    scanf("%s", &pathname);
+
+  if(rmdir(pathname) != 0){
+      perror("rmdir() error\n"); return 1;
+  } 
+
+  return 0;
+}
+
+//Função para entrar em um diretório
+int mycd() {
+  // int chdir(const char *path);
+  char path[PATH_MAX];
+  //int fd;
+  printf("Para qual diretório você deseja ir? ");
+  scanf("%s", &path);
+
+  if(chdir(path) != 0){
+    perror("rmdir() error\n"); return 1;
+  }
+  return 0;
+}
+
+int mystat() {
+  char pathname[PATH_MAX];
+  printf("Qual arquivo você deseja verificar os seus dados? ");
+  scanf("%s", pathname);
+
+  struct stat statbuf;
+
+  if (stat(pathname, &statbuf) != 0) {
+    perror("stat() error"); return 1;
+  }
+
+  // Use appropriate format specifiers and type casts for clarity
+  printf("Tipo de arquivo: ");
+  switch (statbuf.st_mode & S_IFMT) {
+    case S_IFBLK: printf("block device\n"); break;
+    case S_IFCHR: printf("character device\n"); break;
+    case S_IFDIR: printf("directory\n"); break;
+    case S_IFIFO: printf("FIFO/pipe\n"); break;
+    case S_IFLNK: printf("symlink\n"); break;
+    case S_IFREG: printf("regular file\n"); break;
+    case S_IFSOCK: printf("socket\n"); break;
+    default: printf("unknown?\n"); break;
+  }
+
+  // Corrected format specifiers and removed unnecessary parentheses
+  printf("I-node number: %ju\n", statbuf.st_ino);
+  printf("Mode: %jo (octal)\n", statbuf.st_mode);
+  printf("Link count: %ju\n", statbuf.st_nlink);
+  printf("Ownership: UID=%ju   GID=%ju\n", statbuf.st_uid, statbuf.st_gid);
+  printf("Preferred I/O block size: %jd bytes\n", statbuf.st_blksize);
+  printf("File size: %jd bytes\n", statbuf.st_size);
+  printf("Blocks allocated: %jd\n", statbuf.st_blocks);
+
+  printf("Last status change:       %s", ctime(&statbuf.st_ctime));
+  printf("Last file access:         %s", ctime(&statbuf.st_atime));
+  printf("Last file modification:   %s", ctime(&statbuf.st_mtime));
+
+  return 0;
+}
+
+int myls() {
+  printf("Lista conteúdo de diretórios: ");
+  DIR *opendir(const char *name);
+  struct dirent *readdir(DIR *dirp);
+  int closedir(DIR *dirp);
+  
+    struct dirent *dir;
+    DIR *d;
+    d = opendir(in);
+
+    //verificando os dado que estão dentro do diretório
+    while(dir = reddir(d) != 0){
+
+    }
+
+    closedir(d);
+
+    //abrir o arquivo
+    //verificar se não recebe nulo
+
+  return 0;
+}
+
+int main(int argc, char** argv) {
+  int test = 0;
+  while(test == 0) {
+    char in[60];
+    printf("myshell> ");
+    scanf("%s", &in);
+  
+    if(strcmp(in, "exit") == 0) {
+      test = 1;
+    } else if(strcmp(in, "cwd") == 0) {
+      mycwd();
+    } else if(strcmp(in, "mkdir") == 0) {
+      mymkdir();
+    } else if(strcmp(in, "rmdir") == 0) {
+      myrmdir();
+    } else if(strcmp(in, "cd") == 0) {
+      mycd();
+    } else if(strcmp(in, "stat") == 0) {
+      mystat();
+    } else if(strcmp(in, "ls") == 0) {
+      myls();
+    } else {
+      printf("Comando não encontrado\n");
+    }
+  }
+}
