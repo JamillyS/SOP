@@ -60,7 +60,7 @@ int mycd() {
   scanf("%s", &path);
 
   if(chdir(path) != 0){
-    perror("rmdir() error\n"); return 1;
+    perror("cd() error\n"); return 1;
   }
   return 0;
 }
@@ -106,27 +106,38 @@ int mystat() {
 }
 
 int myls() {
-  printf("Lista conteúdo de diretórios: ");
-  DIR *opendir(const char *name);
-  struct dirent *readdir(DIR *dirp);
-  int closedir(DIR *dirp);
-  
-    struct dirent *dir;
-    DIR *d;
-    d = opendir(in);
 
-    //verificando os dado que estão dentro do diretório
-    while(dir = reddir(d) != 0){
+  printf("Listando conteúdo do diretório atual: \n");
 
+  //  Abre o diretório
+  DIR *d = opendir(".");
+
+  if (d == NULL) {
+    perror("ls() error");
+    return 1;
+  }
+
+  struct dirent *dir;
+
+  //  Realizo a leitura do diretório enquanto não for NULL
+  while ((dir = readdir(d)) != NULL) {
+
+    //  O if ignora os "." || ".." para são serem impressos
+    if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
+      continue;
     }
 
-    closedir(d);
+    // Impressão dos nomes dos arquivos
+    printf("%s ", dir->d_name);
+  }
 
-    //abrir o arquivo
-    //verificar se não recebe nulo
+  //fechamento do diretório
+  closedir(d);
+  printf("\n");
 
   return 0;
 }
+
 
 int main(int argc, char** argv) {
   int test = 0;
