@@ -105,38 +105,65 @@ int mystat() {
   return 0;
 }
 
+//solução do professor
 int myls() {
 
-  printf("Listando conteúdo do diretório atual: \n");
-
-  //  Abre o diretório
-  DIR *d = opendir(".");
-
-  if (d == NULL) {
-    perror("ls() error");
-    return 1;
-  }
-
+   //  Abre o diretório
+  DIR *d;
   struct dirent *dir;
 
+  char name[PATH_MAX];
+  printf("Diretório a listar: ");
+  scanf("%s", &name);
+
+  d = opendir(name);
+
+  if (d != NULL) {
+      while ((dir = readdir(d)) !=  NULL){
+      printf("%s\n", dir->d_name);
+      }
+      closedir(d);
+  }else{
+    printf("Diretório %s não encontrado\n", &name);
+    return 1;
+  }
+  return 0;
+
+ }
+
+//Minha solução
+//int myls() {
+
+  //printf("Listando conteúdo do diretório atual: \n");
+
+  //  Abre o diretório
+  //DIR *d = opendir(".");
+
+ // if (d == NULL) {
+  //  perror("ls() error");
+   // return 1;
+  //}
+
+ // struct dirent *dir;
+
   //  Realizo a leitura do diretório enquanto não for NULL
-  while ((dir = readdir(d)) != NULL) {
+ // while ((dir = readdir(d)) != NULL) {
 
     //  O if ignora os "." || ".." para são serem impressos
-    if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
-      continue;
-    }
+   // if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
+     // continue;
+   // }
 
     // Impressão dos nomes dos arquivos
-    printf("%s ", dir->d_name);
-  }
+   // printf("%s ", dir->d_name);
+  //}
 
   //fechamento do diretório
-  closedir(d);
-  printf("\n");
+ // closedir(d);
+ // printf("\n");
 
-  return 0;
-}
+ // return 0;
+//}
 
 
 int main(int argc, char** argv) {
