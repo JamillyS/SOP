@@ -131,41 +131,9 @@ int myls() {
 
  }
 
-//Minha solução
-//int myls() {
+ 
 
-  //printf("Listando conteúdo do diretório atual: \n");
-
-  //  Abre o diretório
-  //DIR *d = opendir(".");
-
- // if (d == NULL) {
-  //  perror("ls() error");
-   // return 1;
-  //}
-
- // struct dirent *dir;
-
-  //  Realizo a leitura do diretório enquanto não for NULL
- // while ((dir = readdir(d)) != NULL) {
-
-    //  O if ignora os "." || ".." para são serem impressos
-   // if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0) {
-     // continue;
-   // }
-
-    // Impressão dos nomes dos arquivos
-   // printf("%s ", dir->d_name);
-  //}
-
-  //fechamento do diretório
- // closedir(d);
- // printf("\n");
-
- // return 0;
-//}
-
-
+//Função principal
 int main(int argc, char** argv) {
   int test = 0;
   while(test == 0) {
