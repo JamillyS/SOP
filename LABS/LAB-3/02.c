@@ -19,30 +19,88 @@ int main(){
     int resp = 1;
     int i = 5;
 
-    printf("5! = %d", resp);
-    exit(0);
+    // printf("5! = %d", resp);
+    // exit(0);
 
-    while(i > 0){
-        pid = fork();
-
-        if (pid == -1) {
+    pid = fork();
+    if (pid < 0) {
             perror("fork falhou!\n");
             exit(-1);
-        }else if(pid == 0){  
-            //....
-        }
-        //pid 
-        //verifica -1 se deu erro 
-
-        //filho faz operação
-        //retorna o valor
-
-        //pai espera filho
-        
-        if(WIFEXITED(status)){
-            i--;
-            resp = WEXITSTATUS;
-        }
+    } else if(pid == 0){
+        resp *= i;
+        return resp;
+    }else{
+        wait(&status);
+            if(WIFEXITED(status)){
+                i--;
+                resp = WEXITSTATUS(status);
+            }
     }
-    
+
+    pid = fork();
+    if (pid < 0) {
+            perror("fork falhou!\n");
+            exit(-1);
+    } else if(pid == 0){
+        resp *= i;
+        return resp;
+    }else{
+        wait(&status);
+            if(WIFEXITED(status)){
+                i--;
+                resp = WEXITSTATUS(status);
+            }
+    }
+
+
+    pid = fork();
+    if (pid < 0) {
+            perror("fork falhou!\n");
+            exit(-1);
+    } else if(pid == 0){
+        resp *= i;
+        return resp;
+    }else{
+        wait(&status);
+            if(WIFEXITED(status)){
+                i--;
+                resp = WEXITSTATUS(status);
+            }
+    }
+
+
+    pid = fork();
+    if (pid < 0) {
+            perror("fork falhou!\n");
+            exit(-1);
+    } else if(pid == 0){
+        resp *= i;
+        return resp;
+    }else{
+        wait(&status);
+            if(WIFEXITED(status)){
+                i--;
+                resp = WEXITSTATUS(status);
+            }
+    }
+
+
+    pid = fork();
+    if (pid < 0) {
+            perror("fork falhou!\n");
+            exit(-1);
+    } else if(pid == 0){
+        resp *= i;
+        return resp;
+    }else{
+        wait(&status);
+            if(WIFEXITED(status)){
+                i--;
+                resp = WEXITSTATUS(status);
+            }
+    }
+
+    printf("5! = %d \n", resp);
+    exit(0);
+
 }
