@@ -49,7 +49,7 @@ int main(int argc, char **argv, char **envp){
     
         else if (pid == 0) { // processo filho
             execve(s[0], argv, envp);
-            perror("erro de execução: ");
+            perror(" ");
             exit(1);
         }
         
