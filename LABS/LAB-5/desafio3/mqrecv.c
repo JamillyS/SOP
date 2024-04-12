@@ -1,5 +1,5 @@
 // Arquivo mq-recv.c: recebe mensagens de uma fila de mensagens Posix.
-// Em Linux, compile usando: gcc -Wall mqrecv.c -o mqrecv -lrt
+// Em Linux, compile usando: cc -Wall mqrecv.c -o mqrecv -lrt
 // Carlos Maziero, DINF/UFPR, Julho de 2020
 
 #include <stdio.h>
@@ -23,25 +23,26 @@ int main (int argc, char *argv[])
   umask (0) ;                     // mascara de permissoes (umask)
 
   // abre ou cria a fila com permissoes 0666
-  // se a fila ja existir, ela nao sera recriada
   if ((queue = mq_open (QUEUE, O_RDWR|O_CREAT, 0666, &attr)) < 0)
   {
-
     perror ("mq_open") ;
     exit (1) ;
   }
 
-  // recebe cada mensagem e imprime seu conteudo
-  // o programa nao termina, pois a fila de mensagens
-  for (;;)
-  {
-    //se a fila estiver vazia, o processo sera bloqueado
-    if ((mq_receive (queue, (void*) &msg, sizeof(msg), 0)) < 0)
-    {
-  
+  for (;;){
+    if ((mq_receive (queue, (void*) &msg, sizeof(msg), 0)) < 0){
       perror("mq_receive:") ;
       exit (1) ;
     }
     printf ("Received msg value %d\n", msg) ;
+
+     //Se receber a mensagem -1 irá encerrar o programa
+     if (msg == -1) {
+      mq_close (queue);   //fecha o descritor da fila
+      mq_unlink (QUEUE);  //remove a fila do sistema
+      exit (0);
+    }
   }
 }
+    
+   

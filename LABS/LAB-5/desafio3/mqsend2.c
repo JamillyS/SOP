@@ -21,9 +21,8 @@ int main (int argc, char *argv[])
     exit (1) ;
   }
 
-  for (;;)
-  {
-    msg = random() % 100 ;  // valor entre 0 e 99
+  for (int i = 0; i < 10; i++){
+    msg = random() % 1000; 
 
     // envia a mensagem
     if (mq_send (queue, (void*) &msg, sizeof(msg), 0) < 0)
@@ -34,4 +33,19 @@ int main (int argc, char *argv[])
     printf ("Sent message with value %d\n", msg) ;
     sleep (1) ;
   }
+
+  msg = -1;
+  //Enviando a mensagem -1 para encerrar
+  if (mq_send (queue, (void*) &msg, sizeof(msg), 0) < 0)
+  {
+    perror ("mq_send") ;
+    exit (1) ;
+  }
+
+  if (msg == -1){
+    mq_close (queue);   //fecha o descritor da fila
+    mq_unlink (QUEUE);  //remove a fila do sistema
+    exit (0);           //encerro o programa
+  }
+ 
 }
