@@ -40,13 +40,15 @@ void *carroEstacionando(void *){
 
     int cancela = rand() % 7;
     
+    
     printf("Carro %d chegou na cancela %d\n", meu_num, cancela); 
     sem_wait(&s);
-    pthread_mutex_lock(&Cancela[cancela]);
+    //pthread_mutex_lock(&Cancela[cancela]);
+    pthread_mutex_lock(&mutex_num);
     printf("Carro %d entrando pela cancela %d\n", meu_num, cancela);
     sleep(5);
-    pthread_mutex_unlock(&mutex_num); 
-
+    pthread_mutex_unlock(&mutex_num);
+    //pthread_mutex_unlock(&Cancela[cancela]);
 
     int sorteio = rand() % 10;
     sleep(10 + sorteio);
@@ -63,9 +65,12 @@ int main(int argc, char *argv[]){
     long status;
     int i;
 
-    sem_init(&s, 0, NUM_STEPS);
+    //aqui tava diferente
+    // sem_init(&s, 0, NUM_STEPS);
+    sem_init(&s, 0, 10);
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+
 
     for(i = 0; i < NUM_CARROS; i++){
         status = pthread_create(&carro[i], &attr, carroEstacionando, NULL);
@@ -83,113 +88,4 @@ int main(int argc, char *argv[]){
         }
     }
 
-    pthread_attr_destroy(&attr);
-    sem_destroy(&s);            
-    pthread_mutex_destroy(&mutex_num);
-    for(i = 0; i < 7; i++){
-        pthread_mutex_destroy(&Cancela[i]);
-    }
-
 }
-
-
-//Meu código no qual está funcionando:
-
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <pthread.h>
-// #include <semaphore.h>
-// #include <unistd.h>
- 
-// #define NUM_CARROS 20
-// #define NUM_STEPS 10    
-
-// sem_t s;
-// int num = 0 ;
-// pthread_mutex_t mutex_num;
-// pthread_mutex_t Cancela[7];
-// //coloquei arg
-// void *carroEstacionando(void *){
-    
-//     pthread_mutex_lock(&mutex_num);
-//     num++;
-//     int meu_num = num;
-//     pthread_mutex_unlock(&mutex_num);
-
-//     int cancela = rand() % 7;
-
-//     // Escrevo que o carro chegou na cancela
-//     //aqui as 7 cancelas
-//     //imprimir carro X entrando pela cancela Y
-//     //Esperar 5 segundos
-//     //faz unlock da cancela
-
-
-//     sem_wait(&s);
-//     printf("Carro %d chegou na cancela %d\n", meu_num, cancela);
-//     pthread_mutex_lock(&Cancela[cancela]);
-//     printf("Carro %d entrando pela cancela %d\n", meu_num, cancela);
-//     sleep(5);
-//     pthread_mutex_unlock(&Cancela[cancela]);
-
-
-
-//     int sorteio = rand() % 10;
-//     //esperar 10 +(a a 10) segundos
-//     sleep(10 + sorteio);
-//     sem_post(&s);
-//     //imprime que está saindo
-//     printf("Carro %d saindo do estacionamento\n", meu_num);
-
-//     pthread_exit(NULL);
-
-
-// }
- 
-// int main(int argc, char *argv[]){
-
-//     pthread_t carro[NUM_CARROS];
-//     pthread_attr_t attr;
-//     long status;
-//     int i;
-
-//     sem_init(&s, 0, NUM_STEPS);
-//     pthread_mutex_init(&mutex_num, NULL);
-//     for(i = 0; i < 7; i++){
-//         pthread_mutex_init(&Cancela[i], NULL);
-//     }
-
-
-//     pthread_attr_init(&attr);
-//     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
-//     //cria as threads com um for ate NUM_CARRO
-//     for(i = 0; i < NUM_CARROS; i++){
-//         //Talvez no final seja um NULL
-//          status = pthread_create(&carro[i], &attr, carroEstacionando, (void *)&i);
-//         if(status){
-//             perror("pthread_create") ;
-//             exit (1);
-//         }
-//     }
-
-//     //Realiza join usando  for até o NUM_CARROS
-//     for(i = 0; i < NUM_CARROS; i++){
-//         status = pthread_join (carro[i], NULL);
-//         if(status){
-//             perror ("pthread_join") ;
-//             exit (1) ;
-//         }
-//     }
-
-//     pthread_attr_destroy (&attr) ;
-//     pthread_mutex_destroy(&mutex_num);
-//     for(i = 0; i < 7; i++){
-//         pthread_mutex_destroy(&Cancela[i]);
-//     }
-//     pthread_exit (NULL) ;
-
-
-// }
-
-
