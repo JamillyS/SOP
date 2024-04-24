@@ -23,36 +23,38 @@
 #include <semaphore.h>
 #include <unistd.h>
  
+
 #define NUM_CARROS 20
-#define NUM_STEPS 10  
-  
-sem_t s;
-int num = 0 ;
-pthread_mutex_t mutex_num;
-pthread_mutex_t Cancela[7];
+#define NUM_STEPS 10    
+
+//Variaveis globais:
+sem_t s;                    // Semáforo
+int num = 0 ;               // num é o número de carros
+pthread_mutex_t mutex_num;  // mutex de num
+pthread_mutex_t Cancela[7]; // um mutex para cada cancela
 
 void *carroEstacionando(void *){
-    
-    pthread_mutex_lock(&mutex_num);
-    num++;
-    int meu_num = num;
-    pthread_mutex_unlock(&mutex_num);
+
+    pthread_mutex_lock(&mutex_num);     //bloqueia o mutex_num
+    num++;                              //incrementa o num
+    int meu_num = num;              
+    pthread_mutex_unlock(&mutex_num);   //desbloqueia o mutex_num  
 
     int cancela = rand() % 7;
-    
-    
-    printf("Carro %d chegou na cancela %d\n", meu_num, cancela); 
-    sem_wait(&s);
+
+    sem_wait(&s);   
+    printf("Carro %d chegou na cancela %d\n", meu_num, cancela);
     //pthread_mutex_lock(&Cancela[cancela]);
-    pthread_mutex_lock(&mutex_num);
+    pthread_mutex_lock(&mutex_num);     //bloqueia o mutex_num
     printf("Carro %d entrando pela cancela %d\n", meu_num, cancela);
-    sleep(5);
-    pthread_mutex_unlock(&mutex_num);
+    sleep(5);                           //Atraso, para simular a passagem do carro pela cancela
     //pthread_mutex_unlock(&Cancela[cancela]);
+    pthread_mutex_unlock(&mutex_num);   //desbloqueia o mutex_num
 
     int sorteio = rand() % 10;
-    sleep(10 + sorteio);
-    sem_post(&s);
+    sleep(10 + sorteio);            //Atraso, para simular o tempo que o carro fica no estacionamento
+
+    sem_post(&s);                   //Libera a vaga no estacionamento
     printf("Carro %d saindo do estacionamento\n", meu_num);
     pthread_exit(NULL);
 
@@ -60,20 +62,25 @@ void *carroEstacionando(void *){
  
 int main(int argc, char *argv[]){
 
-    pthread_t carro[NUM_CARROS];
-    pthread_attr_t attr;
-    long status;
+    pthread_t carro[NUM_CARROS];        //threads
+    pthread_attr_t attr;                
+    long status;                        //status da thread
+    
     int i;
 
-    //aqui tava diferente
-    // sem_init(&s, 0, NUM_STEPS);
-    sem_init(&s, 0, 10);
-    pthread_attr_init(&attr);
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+    sem_init(&s, 0, NUM_STEPS);             //inicializa o semáforo
+    pthread_mutex_init(&mutex_num, NULL);   //inicializa o mutex_num   
+    // for(i = 0; i < 7; i++){
+    //     pthread_mutex_init(&Cancela[i], NULL);
+    // }
 
+
+    pthread_attr_init(&attr);           //inicializa a thread
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE); //estado da thread
 
     for(i = 0; i < NUM_CARROS; i++){
-        status = pthread_create(&carro[i], &attr, carroEstacionando, NULL);
+        //Talvez no final seja um NULL
+         status = pthread_create(&carro[i], &attr, carroEstacionando, NULL); 
         if(status){
             perror("pthread_create") ;
             exit (1);
@@ -81,11 +88,15 @@ int main(int argc, char *argv[]){
     }
 
     for(i = 0; i < NUM_CARROS; i++){
-        status = pthread_join(carro[i], NULL);
+        status = pthread_join (carro[i], NULL);
         if(status){
-            perror("pthread_join") ;
-            exit (1);
+            perror ("pthread_join") ;
+            exit (1) ;
         }
     }
+
+    pthread_attr_destroy (&attr) ;
+    pthread_mutex_destroy(&mutex_num);
+
 
 }
