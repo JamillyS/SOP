@@ -40,7 +40,7 @@ void *carroEstacionando(void *){
     int meu_num = num;              
     pthread_mutex_unlock(&mutex_num);   //desbloqueia o mutex_num  
 
-    int cancela = rand() % 7;
+    int cancela = rand() % 7 + 1;       //sorteio da cancela de 1 a 7
 
     sem_wait(&s);   
     printf("Carro %d chegou na cancela %d\n", meu_num, cancela);

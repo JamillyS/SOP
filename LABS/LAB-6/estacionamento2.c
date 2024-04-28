@@ -1,3 +1,8 @@
+//Desafio 2: Ao imprimir a chegada de um carro em uma cancela imprima também a fila na referida cancela.
+//Ex,: [3, 7, 8, 12] Carro 12 chegou na cancela 3.
+
+//gcc -Wall estacionamento2.c -o estacionamento2 -lpthread
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -28,16 +33,13 @@ void *carroEstacionando(void *){
     int meu_num = num;
     pthread_mutex_unlock(&mutex_num);   //desbloqueia o mutex_num
 
-    int cancela = rand() % 7;
+    int cancela = rand() % 7 + 1;       //sorteio da cancela de 1 a 7
 
     sem_wait(&s);
     printf("Carro %d chegou na cancela %d\n", meu_num, cancela);
 
     pthread_mutex_lock(&mutex_fila);
     fila[meu_num] = cancela;
-    pthread_mutex_unlock(&mutex_fila);
-
-    pthread_mutex_lock(&mutex_num);     //bloqueia o mutex_num
 
     printf("[");
     for (int i = 1; i <= num; i++){
@@ -45,21 +47,32 @@ void *carroEstacionando(void *){
             printf(" %d,", i);
         }
     }
-    printf(" ]");
+    printf(" ] ");
+    pthread_mutex_unlock(&mutex_fila);
 
     printf("Carro %d entrando pela cancela %d\n", meu_num, cancela);
-    sleep(5);                           //Atraso, para simular a passagem do carro pela cancela
-    //pthread_mutex_unlock(&Cancela[cancela]);
-    pthread_mutex_unlock(&mutex_num);   //desbloqueia o mutex_num
+    sleep(5);                  //Atraso, para simular a passagem do carro pela cancela
+
 
     int sorteio = rand() % 10;
-    sleep(10 + sorteio);            //Atraso, para simular o tempo que o carro fica no estacionamento
+    sleep(10 + sorteio);      //Atraso, para simular o tempo que o carro fica no estacionamento
+
+    //Para remover o carro da fila
+    pthread_mutex_lock(&mutex_fila);
+    fila[meu_num] = 0;      //removo o carro da fila
+
+    printf("[");
+    for (int i = 1; i <= num; i++){
+        if(fila[i] == cancela){
+            printf(" %d,", i);
+        }
+    }
+    printf(" ] ");
+    pthread_mutex_unlock(&mutex_fila);
 
     sem_post(&s);                   //Libera a vaga no estacionamento
     printf("Carro %d saindo do estacionamento\n", meu_num);
 
-    pthread_mutex_lock(&mutex_fila);
-    
 
     pthread_exit(NULL);
 
