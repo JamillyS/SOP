@@ -12,6 +12,7 @@ Compilar com gcc -Wall filosofos-none.c -o filosofos-none -lpthread
 #define NUMFILO 5
 
 pthread_t filosofo [NUMFILO] ;	// threads filosofos
+
 sem_t     hashi    [NUMFILO];
 sem_t     saleiro;    
 
@@ -20,7 +21,6 @@ char *space[] = {"", "\t", "\t\t", "\t\t\t", "\t\t\t\t" } ;
 
 // espera um tempo aleatório entre 0 e n segundos (float)
 void espera (int n){
-
   sleep (random() % n) ;	// pausa entre 0 e n segundos (inteiro)
   usleep (random() % 1000000) ;	// pausa entre 0 e 1 segundo (float)
 }
@@ -28,28 +28,28 @@ void espera (int n){
 // filósofo comendo
 void come (int f){
 
-  printf ("%sCOMENDO\n", space[f]) ;
+  printf ("%sF%d COMENDO\n", space[f], f) ;
   espera (2) ;
 
 }
 
 // filósofo meditando
 void medita (int f){
-  printf ("%smeditando\n", space[f]) ;
+  printf ("%sF%d meditando\n", space[f], f) ;
   espera (2) ;
 }
 
 // pega o hashi
 void pega_hashi (int f, int h)
 {
-  printf ("%squer h%d\n", space[f], h) ;
+  printf ("%sF%d quer h%d\n", space[f], f, h) ;
   sem_wait(&hashi[h]);  //Adicionei isso
-  printf ("%spegou h%d\n", space[f], h) ;
+  printf ("%sF%d pegou h%d\n", space[f], f, h) ;
 }
 
 // larga o hashi
 void larga_hashi (int f, int h){
-  printf ("%slarga h%d\n", space[f], h) ;
+  printf ("%sF%d larga h%d\n", space[f], f, h) ;
   sem_post(&hashi[h]);   //Adicionei isso aqui
 }
 
